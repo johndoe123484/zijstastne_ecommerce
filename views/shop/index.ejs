@@ -1,0 +1,137 @@
+<%- include ../partials/header %> <%- include ../partials/categories-navbar %>
+
+<div class="container-fluid">
+  <!-- Flash messages -->
+  <% if(successMsg || errorMsg) {%>
+  <div class="row mt-3 mb-3">
+    <div class="col-md-12 m-auto">
+      <% if (successMsg) { %>
+      <div id="success" class="alert alert-success">
+        <%= successMsg %>
+      </div>
+      <% } else { %>
+      <div id="success" class="alert alert-success d-none"></div>
+      <% } %>
+    </div>
+    <div class="col-md-12 m-auto">
+      <% if (errorMsg) { %>
+      <div id="error" class="alert alert-danger">
+        <%= errorMsg %>
+      </div>
+      <% } else { %>
+      <div id="error" class="alert alert-danger d-none"></div>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+  <!-- Breadcrumbs -->
+  <div class="row mt-2">
+    <div class="col-md-12 m-auto">
+      <%if (breadcrumbs) { %>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <% breadcrumbs.forEach(crumb => { if(!crumb.name.startsWith("?")){%>
+          <li class="breadcrumb-item" aria-current="page">
+            <a href="<%=crumb.url%>"><%= crumb.name %></a>
+          </li>
+          <%}})%>
+        </ol>
+      </nav>
+      <%} %>
+    </div>
+  </div>
+  <!-- Page banner image -->
+
+  <% if(pageName == 'All Products') { %>
+  <div class="text-center hero-container">
+    <img
+      class="d-block w-100 hero-image"
+      src="/images/banner-all-products.webp"
+    />
+    <div class="hero-text">
+      <h1>Všechny produkty</h1>
+    </div>
+  </div>
+  <%} else {%> <%categories.forEach( category => {%> <%if(pageName ==
+  category.title){%>
+  <div class="text-center hero-container">
+    <img
+      class="d-block w-100 hero-image"
+      src="/images/banner-<%=category.slug%>.webp"
+    />
+    <div class="hero-text">
+      <h1><%=pageName%></h1>
+      <div  onclick="smoothScroll(document.getElementById('products-in-category'))"><svg role="presentation" class="t-cover__arrow-svg" style="fill:#e6e6e6;" x="0px" y="0px" width="38.417px" height="18.592px" viewBox="0 0 38.417 18.592"><g><path d="M19.208,18.592c-0.241,0-0.483-0.087-0.673-0.261L0.327,1.74c-0.408-0.372-0.438-1.004-0.066-1.413c0.372-0.409,1.004-0.439,1.413-0.066L19.208,16.24L36.743,0.261c0.411-0.372,1.042-0.342,1.413,0.066c0.372,0.408,0.343,1.041-0.065,1.413L19.881,18.332C19.691,18.505,19.449,18.592,19.208,18.592z"></path></g></svg></div>
+    </div>
+  </div>
+  <%}%> <%})%> <%}%>
+
+  <hr class="gradient-style" />
+  <!-- Contents -->
+  <div class="row pl-4 pr-4" id="products-in-category">
+    <% products.forEach((product) => { %>
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 product-index-box">
+      <div class="single-product d-flex flex-column h-100">
+        <a
+          class="title-link"
+          href="/products/<%=product.category.slug%>/<%=product._id%>"
+        >
+          <img src="<%= product.imagePath %>" alt="Bag" class="img-fluid"
+        /></a>
+        <div class="product-info">
+          <a
+            class="title-link"
+            href="/products/<%=product.category.slug%>/<%=product._id%>"
+          >
+            <h6 class="mt-2 mb-2"><%= product.title %></h6></a
+          >
+          <div class="price"><%= product.price %>,00 Kč</div>
+        </div>
+        <% if(product.available) {%>
+        <a
+          href="/add-to-cart/<%=product._id%>"
+          class="btn btn-block btn-secondary button-style mt-auto mb-2"
+        >
+        Přidat do košíku
+        </a>
+        <% } else { %>
+        <a
+          href="#"
+          class="btn btn-block btn-danger button-style-danger mt-2 mb-2"
+        >
+        Vyprodáno
+        </a>
+        <%} %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+
+  <script>
+    window.smoothScroll = function(target) {
+        var scrollContainer = target;
+        do { //find scroll container
+            scrollContainer = scrollContainer.parentNode;
+            if (!scrollContainer) return;
+            scrollContainer.scrollTop += 1;
+        } while (scrollContainer.scrollTop == 0);
+        
+        var targetY = 0;
+        do { //find the top of target relatively to the container
+            if (target == scrollContainer) break;
+            targetY += target.offsetTop;
+        } while (target = target.offsetParent);
+        
+        scroll = function(c, a, b, i) {
+            i++; if (i > 30) return;
+            c.scrollTop = a + (b - a) / 30 * i;
+            setTimeout(function(){ scroll(c, a, b, i); }, 20);
+        }
+        // start scrolling
+        scroll(scrollContainer, scrollContainer.scrollTop, targetY, 0);
+    }
+  </script>
+
+  <%- include ../partials/pagination %>
+</div>
+<%- include ../partials/footer %>
